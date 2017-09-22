@@ -749,6 +749,25 @@ namespace DbExtensions {
          }
       }
 
+#if NETSTANDARD2_0
+      class DbProviderFactories {
+
+         public static DbProviderFactory GetFactory(string providerInvariantName) {
+
+            string factoryName = providerInvariantName.Split('.').Last() + "Factory";
+
+            Type factoryType = Type.GetType(providerInvariantName + "." + factoryName, throwOnError: true);
+
+            return (DbProviderFactory)factoryType.GetField("Instance", BindingFlags.Static | BindingFlags.Public)
+               .GetValue(null);
+         }
+
+         public static DbProviderFactory/*?*/ GetFactory(DbConnection connection) {
+            return null;
+         }
+      }
+#endif
+
       #endregion
    }
 
